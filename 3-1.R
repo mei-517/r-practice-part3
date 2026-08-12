@@ -169,18 +169,105 @@ print(num)
 
 
 ## Author: Mei Nagai
-## Date:2026/08/10
+## Date:2026/08/12
 ## 9章 ループ
 
 
+## 以下練習 ウェイトのかかったさいころの期待値を計算する#################################
+
+## さいころを２回振る
+die <- c(1,2,3,4,5,6)
+rolls <- expand.grid(die,die)
+
+## 二つの出目の和の行を追加する
+rolls$value <- rolls$Var1 + rolls$Var2
+head(rolls,3)
+
+## 確率
+prob <- c("1"=1/8, "2"=1/8, "3"=1/8, "4"=1/8, "5"=1/8,"6"=3/8)
+prob
+
+## さいころ１の確率
+prob[rolls$Var1]
+
+## 結果をrollsに追加
+rolls$prob1 <- prob[rolls$Var1]
+head(rolls,3)
+
+## さいころ２の確率も追加
+rolls$prob2 <- prob[rolls$Var2]
+head(rolls,3)
+
+## かけ合わせて個々の組の出る確率を追加
+rolls$prob <- rolls$prob1 *rolls$prob2
+head(rolls,3)
+
+## 値と確率の積を足し合わせて期待値を計算
+sum(rolls$value * rolls$prob)
+
+## 以上練習 さいころの期待値#########################################################
 
 
+## スロットマシンの期待値の計算
+
+## スロットの中身を用意する
+wheel <- c("DD","7","BBB","BB","B","C","0")
+## ３つの組み合わせのリストを作る
+combos <- expand.grid(wheel,wheel,wheel,stringsAsFactors = FALSE)
+head(combos,3)
+
+## 確率のルックアップテーブルを用意する
+prob <- c("DD" = 0.03, "7" = 0.03, "BBB" = 0.06, "BB" = 0.1, "B" = 0.25, "C" = 0.01, "0" = 0.52)
+
+## Var1,Var2,Var3それぞれの確率を追加する
+combos$prob1 <- prob[combos$Var1]
+combos$prob2 <- prob[combos$Var2]
+combos$prob3 <- prob[combos$Var3]
+head(combos,3)
+
+## 組み合わせごとの確率を追加する
+combos$prob <- combos$prob1 * combos$prob2 * combos$prob3
+head(combos,3)
+
+## 確率の合計が１になるか確かめる
+sum(combos$prob)
 
 
+## 下記343回分をfor文で繰り返す
+## symbols <- c(combos[1,1],combos[1,2],combos[1,3])
+## score(symbols)
+
+## 賞金を入れる空の列を追加する
+combos$prize <- NA
+
+## score関数のコピー
+score <- function(symbols){
+  same <- length(unique(symbols)) == 1
+  bars <- symbols %in% c("B","BB","BBB")
+  
+  if(same){
+    payouts <- c("DD" = 100,"7" = 80,"BBB" = 40,"BB" = 25,"B" = 10,"C" = 10,"0" = 0)
+    prize <- unname(payouts[symbols[1]])
+  }else if(all(bars)){
+    prize <- 5
+  }else{
+    cherries <- sum(symbols == "C")
+    prize <- c(0,2,5)[cherries+1]
+  }
+  
+  diamonds <- sum(symbols == "DD")
+  prize*2^diamonds
+}
+
+## 各行に賞金を代入する
+for(i in 1:nrow(combos)){
+  symbols <- c(combos[i,1],combos[i,2],combos[i,3])
+  combos$prize[i] <- score(symbols)
+}
+head(combos,3)
+
+## 期待値を出す
+sum(combos$prize * combos$prob)
 
 
-
-
-
-
-
+## 一旦1区切り、こっから訂正入れる#############################################################
