@@ -270,7 +270,7 @@ head(combos,3)
 sum(combos$prize * combos$prob)
 
 
-## 一旦1区切り、こっから訂正入れる#############################################################
+
 
 ## score関数の訂正(ダイヤをワイルドカードとして扱う)
 
@@ -290,7 +290,7 @@ score <- function(symbols){
   if(diamonds == 3){
     prize <- 100
   }else if(same){
-    payouts <- c("7" == 80, "BBB" = 40, "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+    payouts <- c("7" = 80, "BBB" = 40, "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
     prize <- unname(payouts[slots[1]])
   }else if(all(bars)){
     prize <- 5
@@ -307,3 +307,40 @@ score <- function(symbols){
   
 }
 
+## 賞金を再計算する
+for (i in 1:nrow(combos)){
+  symbols <- c(combos[i,1],combos[i,2],combos[i,3])
+  combos$prize[i] <- score(symbols)
+}
+
+sum(combos$prize * combos$prob)
+
+
+
+##持ち金がある限りゲームを続ける(while文)
+plays_till_broke <- function(start_with){
+  cash <- start_with
+  n <- 0
+  while(cash >0){
+    cash <- cash - 1 + play()
+    n <- n + 1
+  }
+  n
+}
+plays_till_broke(100)
+
+
+##持ち金がある限りゲームを続ける(repeat文)
+plays_till_broke <- function(start_with){
+  cash <- start_with
+  n <- 0
+  repeat{
+    cash <- cash - 1 + play()
+    n <- n + 1
+    if (cash <= 0){
+      break
+    }
+  }
+  n
+}
+plays_till_broke(100)
