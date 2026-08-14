@@ -149,14 +149,82 @@ prize*2^diamonds
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Author: Mei Nagai
-## Date:2026/08/10
+## Date:2026/08/14
 ## 8章 S3
 
 
-## test
-num <- 1000000000
-print(num)
+## play()でsymbolsも保存できるようにする
+
+## 元のplay関数
+play <- function(){
+  symbols <- get_symbols()
+  print(symbols)
+  score(symbols)
+}
+one_play <- play()
+one_play
+
+
+## 属性を追加してplay関数を書き換え
+play <- function(){
+  symbols <- get_symbols()
+  prize <- score(symbols)
+  attr(prize,"symbols") <- symbols
+  prize
+}
+two_play <- play()
+two_play
+
+
+## structure関数を使用して、play関数を置き換え
+play <- function(){
+  symbols <- get_symbols()
+  structure(score(symbols),symbols = symbols)
+}
+three_play <- play()
+three_play
+
+## 出力をきれいな書式に変換する
+slot_display <- function(prize){
+  
+  ## シンボルの抽出
+  symbols <- attr(prize,"symbols")
+  
+  ## symbolsを１つの文字列に変換
+  symbols <- paste(symbols,collapse = " ")
+  
+  ## シンボルと賞金額を正規表現として結合
+  string <- paste(symbols, prize, sep = "\n$")
+  
+  ## クォートなしでコンソールに正規表現を表示
+  cat(string)
+}
+four_play <- play()
+four_play
+slot_display(four_play)
+
+
+## ジェネリック関数
+
+
 
 
 
@@ -169,7 +237,7 @@ print(num)
 
 
 ## Author: Mei Nagai
-## Date:2026/08/12
+## Date:2026/08/12-2026/08/14
 ## 9章 ループ
 
 
