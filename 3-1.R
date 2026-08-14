@@ -188,7 +188,7 @@ prob <- c("1"=1/8, "2"=1/8, "3"=1/8, "4"=1/8, "5"=1/8,"6"=3/8)
 prob
 
 ## さいころ１の確率
-prob[rolls$Var1]
+startprob[rolls$Var1]
 
 ## 結果をrollsに追加
 rolls$prob1 <- prob[rolls$Var1]
@@ -271,3 +271,39 @@ sum(combos$prize * combos$prob)
 
 
 ## 一旦1区切り、こっから訂正入れる#############################################################
+
+## score関数の訂正(ダイヤをワイルドカードとして扱う)
+
+score <- function(symbols){
+  
+  diamonds <- sum(symbols == "DD")
+  cherries <- sum(symbols == "C")
+  
+  ## ケースの確定
+  ## ダイヤモンドはワイルドカードなので、同じシンボルが３つそろっているか、
+  ## ３つともバーになっているかはダイヤ以外で考える
+  slots <- symbols[symbols != "DD"]
+  same <- length(unique(slots)) == 1
+  bars <- slots %in% c("B","BB","BBB")
+  
+  ## 賞金の計算
+  if(diamonds == 3){
+    prize <- 100
+  }else if(same){
+    payouts <- c("7" == 80, "BBB" = 40, "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+    prize <- unname(payouts[slots[1]])
+  }else if(all(bars)){
+    prize <- 5
+  }else if(cherries > 0){
+    ## 本物チェリーがあるときに限り
+    ## ダイヤをチェリーとしてカウント
+    prize <- c(0,2,5)[cherries + diamonds + 1]
+  }else{
+    prize <- 0
+  }
+  
+  ## ダイヤによる賞金の加算(１個ごとに２倍)
+  prize*2^diamonds
+  
+}
+
