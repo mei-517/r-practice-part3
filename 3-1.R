@@ -224,6 +224,29 @@ slot_display(four_play)
 
 ## ジェネリック関数
 
+## 新しいclass "slots" を用意する
+class(one_play) <- "slots"
+
+## print.slots()を用意する
+print.slots <- function(x, ...){
+  cat("I'm using the print.slots method")
+}
+
+print(one_play)
+rm(print.slots)
+
+play1 <- play()
+play2 <- play()
+
+play1
+play2
+c(play1,play2)
+
+
+
+
+
+
 
 
 
